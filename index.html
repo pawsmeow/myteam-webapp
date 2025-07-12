@@ -1,13 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MyTeam MLBB</title>
-    <script type="module" crossorigin src="./assets/index.js"></script>
-    <link rel="stylesheet" href="./assets/index.css" />
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MyTeam MLBB</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>MyTeam MLBB — Анкета</h1>
+    <form class="form">
+      <input type="text" placeholder="Ник в MLBB" required />
+      <input type="text" placeholder="Роль" />
+      <input type="text" placeholder="Любимые герои" />
+      <input type="text" placeholder="Активность (время игры)" />
+      <select required>
+        <option disabled selected>Выберите регион</option>
+        <option>Казахстан</option>
+        <option>Россия</option>
+        <option>Европа</option>
+        <option>Турция</option>
+        <option>Киргизия</option>
+        <option>Узбекистан</option>
+        <option>Дальний Восток</option>
+      </select>
+      <input type="number" placeholder="Возраст" />
+      <select>
+        <option disabled selected>Гендер</option>
+        <option>Парень</option>
+        <option>Девушка</option>
+      </select>
+      <select>
+        <option disabled selected>Ищешь</option>
+        <option>Друга/подругу для игры</option>
+        <option>Романтическую пару</option>
+        <option>Тиммейтов</option>
+      </select>
+      <textarea placeholder="О себе (до 100 символов)" maxlength="100" rows="4"></textarea>
+      <button type="submit">Сохранить анкету</button>
+    </form>
+  </div>
+</body>
 </html>
