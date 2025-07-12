@@ -5,16 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MyTeam MLBB</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Минимальный стиль для ошибки */
+    .error {
+      color: #ff4c4c;
+      margin-top: 8px;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <h1>MyTeam MLBB — Анкета</h1>
-    <form class="form">
-      <input type="text" placeholder="Ник в MLBB" required />
-      <input type="text" placeholder="Роль" />
-      <input type="text" placeholder="Любимые герои" />
-      <input type="text" placeholder="Активность (время игры)" />
-      <select required>
+    <form class="form" id="profileForm">
+      <input type="text" placeholder="Ник в MLBB" name="nick" required />
+      <input type="text" placeholder="Роль" name="role" />
+      <input type="text" placeholder="Любимые герои" name="favoriteHeroes" />
+      <input type="text" placeholder="Активность (время игры)" name="activity" />
+      <select name="region" required>
         <option disabled selected>Выберите регион</option>
         <option>Казахстан</option>
         <option>Россия</option>
@@ -24,21 +32,90 @@
         <option>Узбекистан</option>
         <option>Дальний Восток</option>
       </select>
-      <input type="number" placeholder="Возраст" />
-      <select>
+      <input type="number" placeholder="Возраст" name="age" />
+      <select name="gender">
         <option disabled selected>Гендер</option>
         <option>Парень</option>
         <option>Девушка</option>
       </select>
-      <select>
+      <select name="lookingFor">
         <option disabled selected>Ищешь</option>
         <option>Друга/подругу для игры</option>
         <option>Романтическую пару</option>
         <option>Тиммейтов</option>
       </select>
-      <textarea placeholder="О себе (до 100 символов)" maxlength="100" rows="4"></textarea>
+      <textarea placeholder="О себе (до 100 символов)" maxlength="100" rows="4" name="about"></textarea>
+
       <button type="submit">Сохранить анкету</button>
+      <div class="error" id="error"></div>
     </form>
   </div>
+
+  <script>
+    (function(){
+      const tg = window.Telegram?.WebApp;
+      let tgUserId = null;
+
+      if(tg){
+        tgUserId = tg.initDataUnsafe?.user?.id;
+        console.log("Telegram user id:", tgUserId);
+      } else {
+        console.warn("Это не Telegram WebApp");
+      }
+
+      const form = document.getElementById("profileForm");
+      const errorDiv = document.getElementById("error");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        errorDiv.textContent = "";
+
+        if (!tgUserId) {
+          errorDiv.textContent = "Ошибка: не удалось получить Telegram ID. Откройте из Telegram.";
+          return;
+        }
+
+        const formData = new FormData(form);
+
+        // Проверка обязательных полей
+        const nick = formData.get("nick")?.trim();
+        const region = formData.get("region");
+        if(!nick){
+          errorDiv.textContent = "Пожалуйста, введите Ник в MLBB.";
+          return;
+        }
+        if(!region){
+          errorDiv.textContent = "Пожалуйста, выберите регион.";
+          return;
+        }
+
+        // Собираем объект с заполненными полями
+        const data = { tgUserId };
+        for (let [key, value] of formData.entries()) {
+          if(value && value.trim() !== "") {
+            data[key] = value.trim();
+          }
+        }
+
+        try {
+          const res = await fetch("/api/send-profile", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(data)
+          });
+
+          if(res.ok){
+            alert("Анкета успешно отправлена администратору!");
+            form.reset();
+          } else {
+            errorDiv.textContent = "Ошибка при отправке анкеты.";
+          }
+        } catch (err) {
+          console.error(err);
+          errorDiv.textContent = "Ошибка сети или сервера.";
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
